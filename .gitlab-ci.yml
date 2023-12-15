@@ -1,6 +1,6 @@
 ci:
   variables:
-    USER_API_PORT: 8083
+    PROJECT_API_PORT: 8083
     DB_URL: jdbc:mysql://localhost:3306/todolistMicroServices
     DB_USERNAME: root
     DB_PASSWORD: 123456789
