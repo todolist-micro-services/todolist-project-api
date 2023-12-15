@@ -43,7 +43,7 @@ gradle build
 add ```application.properties``` in ```src/main/resources``` with this content:
 
 ```properties
-USER_API_PORT=
+PROJECT_API_PORT=
 DB_URL=
 DB_USERNAME=
 DB_PASSWORD=

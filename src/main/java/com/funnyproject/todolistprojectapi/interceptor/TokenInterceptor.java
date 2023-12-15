@@ -44,7 +44,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         final String token = this.getToken(request);
         if (token == null)
             return this.formatErrorResponse(response, "You need a token");
-        Token dbToken = this.dataInterface.getUserTokenFromToken(token);
+        Token dbToken = this.dataInterface.retrieveUserTokenFromToken(token);
         if (dbToken == null)
             return this.formatErrorResponse(response, "Token not found");
         if (dbToken.expirationDate.isBefore(LocalDateTime.now())) {
