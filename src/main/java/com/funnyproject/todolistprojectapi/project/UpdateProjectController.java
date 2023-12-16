@@ -36,7 +36,7 @@ public class UpdateProjectController {
         if (authorization.length != 2) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Bad authorization header\"}");
         }
-        databaseUser = this.dataInterface.getUserFromToken(authorization[1]);
+        databaseUser = this.dataInterface.retrieveUserFromToken(authorization[1]);
         if (databaseUser == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"User not found\"}");
         if (!this.dataInterface.updateUser(authorization[1], new User(0, updateUserRequest.getFirstname(), updateUserRequest.getLastname(), databaseUser.email, databaseUser.password)).isEmpty())
@@ -45,16 +45,7 @@ public class UpdateProjectController {
     }
 
     private ResponseEntity<Object> returnNewUser(final String token) {
-        ProjectDto user = new ProjectDto();
-        User databaseUser = this.dataInterface.getUserFromToken(token);
-
-        if (databaseUser == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"User not found\"}");
-        user.setEmail(databaseUser.email);
-        user.setFirstname(databaseUser.firstname);
-        user.setLastname(databaseUser.lastname);
-        user.setId(databaseUser.userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
     private ResponseEntity<Object> checkBody(UpdateProjectRequest updateUserRequest) {

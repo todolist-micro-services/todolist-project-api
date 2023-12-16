@@ -1,6 +1,5 @@
 package com.funnyproject.todolistprojectapi.project;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +16,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class RetrieveUserTests {
+class RetrieveProjectTests {
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
-    private RetrieveProjectController retrieveUser;
+    private RetrieveProjectController retrieveProjectController;
 
     @Test
-    public void requestWithBadBearerToken() throws Exception {
-        when(retrieveUser.retrieveUser(Mockito.anyString(), Mockito.any(HttpServletRequest.class)))
-                .thenReturn(new ResponseEntity<>(HttpStatus.OK));  // Adjust the response as needed
+    public void requestWithBadBearerTokenOne() throws Exception {
+        when(retrieveProjectController.retrieveProjectUsers(Mockito.anyString()))
+                .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
-        mvc.perform(MockMvcRequestBuilders.get("/users/me")
-                        .header("Authorization", "Bearer validToken"))
+        mvc.perform(MockMvcRequestBuilders.get("/projects/user-project/1")
+                        .header("Authorization", "Bearer badToken"))
                 .andExpect(status().isBadRequest());
     }
 
