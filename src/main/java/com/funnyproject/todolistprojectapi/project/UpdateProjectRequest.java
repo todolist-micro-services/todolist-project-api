@@ -1,23 +1,48 @@
 package com.funnyproject.todolistprojectapi.project;
 
 public class UpdateProjectRequest {
+    private String id;
+    private String name;
+    private String description;
+    private String creationDate;
+    private String creator;
 
-    private String firstname;
-    private String lastname;
-
-    public String getFirstname() {
-        return firstname;
+    public String getId() {
+        return id;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getName() {
+        return name;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public String getCreationDate() {
+        return this.creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }
