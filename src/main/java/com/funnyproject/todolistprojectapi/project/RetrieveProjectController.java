@@ -75,8 +75,9 @@ public class RetrieveProjectController {
         try {
             List<UserDto> userDtos = new ArrayList<>();
             final List<User> users = this.dataInterface.retrieveAllUserLinkToProject(Integer.parseInt(project));
-            for (int i = 0; i != users.size(); ++i)
-                userDtos.add(new UserDto((long) users.get(i).userId, users.get(i).firstname, users.get(i).lastname, users.get(i).email));
+            if (users != null)
+                for (int i = 0; i != users.size(); ++i)
+                    userDtos.add(new UserDto((long) users.get(i).userId, users.get(i).firstname, users.get(i).lastname, users.get(i).email));
             return new ResponseEntity<>(userDtos, HttpStatus.OK);
         } catch (NumberFormatException e) {
             e.printStackTrace();
