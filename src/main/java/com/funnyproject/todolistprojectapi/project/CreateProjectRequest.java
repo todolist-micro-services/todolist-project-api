@@ -1,19 +1,10 @@
 package com.funnyproject.todolistprojectapi.project;
 
-public class UpdateProjectRequest {
-    private String id;
+public class CreateProjectRequest {
     private String name;
     private String description;
     private String creationDate;
     private String creator;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

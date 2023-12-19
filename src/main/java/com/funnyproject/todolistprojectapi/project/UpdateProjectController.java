@@ -1,74 +1,82 @@
 package com.funnyproject.todolistprojectapi.project;
 
 import com.funnyproject.todolistprojectapi.AppConfig;
-import com.funnyproject.todolistprojectapi.dto.ProjectDto;
 import com.funnyproject.todolistprojectapi.utils.InitDataInterface;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import todolist.database.DataInterface;
+import todolist.database.dataType.Project;
 import todolist.database.dataType.User;
 
+import java.time.LocalDateTime;
+
 @RestController
-@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/projects", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UpdateProjectController {
 
     private final DataInterface dataInterface;
 
     public UpdateProjectController(AppConfig appConfig) {
-        this.dataInterface = InitDataInterface.initDataInterface(appConfig.getDbUrl(), appConfig.getDbUserName(), appConfig.getDbPassword());
+        this.dataInterface = InitDataInterface.initDataInterface(appConfig.getDbUrl(), appConfig.getDbUserName(),
+                appConfig.getDbPassword());
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Object> updateUser(
+    public ResponseEntity<Object> updateProject(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            HttpServletRequest request,
-            @RequestBody UpdateProjectRequest updateUserRequest
+            @RequestBody UpdateProjectRequest updateProjectRequest
     ) {
         final String[] authorization = authorizationHeader.split(" ");
-        ResponseEntity<Object> checkBodyError = this.checkBody(updateUserRequest);
-        User databaseUser;
 
-        if (checkBodyError != null)
-            return checkBodyError;
         if (authorization.length != 2) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Bad authorization header\"}");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED) .body("{\"error\": \"Bad authorization header\"}");
         }
-        databaseUser = this.dataInterface.getUserFromToken(authorization[1]);
-        if (databaseUser == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"User not found\"}");
-        if (!this.dataInterface.updateUser(authorization[1], new User(0, updateUserRequest.getFirstname(), updateUserRequest.getLastname(), databaseUser.email, databaseUser.password)).isEmpty())
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Internal server error\"}");
-        return this.returnNewUser(authorization[1]);
+        User user = this.dataInterface.retrieveUserFromToken(authorization[1]);
+        if (this.dataInterface.retrieveProjectById(Integer.parseInt(updateProjectRequest.getId())).creator.userId != user.userId)
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("{\"error\": \"user can only update it own projects\"}");
+        ResponseEntity<Object> response = this.checkParameters(updateProjectRequest);
+        if (response != null)
+            return response;
+        final Project project = new Project(Integer.parseInt(updateProjectRequest.getId()),
+                updateProjectRequest.getName(), updateProjectRequest.getDescription(),
+                LocalDateTime.parse(updateProjectRequest.getCreationDate().replace(" ", "T")),
+                new User(Integer.parseInt(updateProjectRequest.getCreator()),
+                        "", "", "", ""));
+        return getProjectCreatedId(project, updateProjectRequest.getCreator(), updateProjectRequest.getName());
     }
 
-    private ResponseEntity<Object> returnNewUser(final String token) {
-        ProjectDto user = new ProjectDto();
-        User databaseUser = this.dataInterface.getUserFromToken(token);
-
-        if (databaseUser == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"User not found\"}");
-        user.setEmail(databaseUser.email);
-        user.setFirstname(databaseUser.firstname);
-        user.setLastname(databaseUser.lastname);
-        user.setId(databaseUser.userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    private ResponseEntity<Object> getProjectCreatedId(Project project, String creator, String name) {
+        final String createProjectResponse = this.dataInterface.updateProject(project);
+        if (!createProjectResponse.isEmpty())
+            return new ResponseEntity<>(createProjectResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        final Project projectCreated = this.dataInterface
+                .retrieveUserProjectByName(Integer.parseInt(creator), name);
+        return new ResponseEntity<>(projectCreated.projectId, HttpStatus.CREATED);
     }
 
-    private ResponseEntity<Object> checkBody(UpdateProjectRequest updateUserRequest) {
+    private ResponseEntity<Object> checkParameters(UpdateProjectRequest updateProjectRequest) {
         try {
-            this.validateUpdateRequest(updateUserRequest);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("{\"error\": \"Missing parameters, needs : firstname, lastname\"}");
+            validateProjectCreationRequest(updateProjectRequest);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .body("{\"error\": \"Missing parameters, needs : id, name, description, creationDate, creator\"}");
         }
         return null;
     }
 
-    private void validateUpdateRequest(UpdateProjectRequest updateUserRequest) {
-        if (updateUserRequest == null || updateUserRequest.getFirstname() == null || updateUserRequest.getLastname() == null)
+    private void validateProjectCreationRequest(UpdateProjectRequest updateProjectRequest) {
+        if (updateProjectRequest == null ||
+                updateProjectRequest.getCreator() == null ||
+                updateProjectRequest.getCreationDate() == null ||
+                updateProjectRequest.getDescription() == null ||
+                updateProjectRequest.getName() == null ||
+                updateProjectRequest.getId() == null) {
             throw new IllegalArgumentException("Missing required parameters");
+        }
     }
-
 }
