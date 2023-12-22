@@ -54,7 +54,8 @@ public class CreateProjectController {
             return new ResponseEntity<>(createProjectResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         final Project projectCreated = this.dataInterface
                 .retrieveUserProjectByName(Integer.parseInt(creator), name);
-        return new ResponseEntity<>(projectCreated.projectId, HttpStatus.CREATED);
+        final String formatOutput = String.format("{\"project\": \"%s\"}", String.valueOf(projectCreated.projectId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(formatOutput);
     }
 
     private ResponseEntity<Object> checkParameters(CreateProjectRequest createProjectRequest) {
