@@ -37,7 +37,7 @@ public class DeleteProjectController {
             if (this.dataInterface.retrieveProjectById(Integer.parseInt(projectId)).creator.userId != user.userId)
                 return ResponseEntity
                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .body("{\"error\": \"user can only update it own projects\"}");
+                        .body("{\"error\": \"user can only delete it own created projects\"}");
             if (!this.dataInterface.deleteProject(Integer.parseInt(projectId)).isEmpty())
                 return ResponseEntity
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)

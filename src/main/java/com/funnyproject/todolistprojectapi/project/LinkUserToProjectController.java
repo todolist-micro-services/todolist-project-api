@@ -1,6 +1,7 @@
 package com.funnyproject.todolistprojectapi.project;
 
 import com.funnyproject.todolistprojectapi.AppConfig;
+import com.funnyproject.todolistprojectapi.utils.CheckRight;
 import com.funnyproject.todolistprojectapi.utils.InitDataInterface;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,10 @@ public class LinkUserToProjectController {
         ResponseEntity<Object> response = this.checkParameters(linkUserToProjectRequest);
         if (response != null)
             return response;
+        if (!CheckRight.isLinkToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()), dataInterface))
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"Error\": \"must be link to project\"}");
         final String dbResponse = this.dataInterface.linkUserToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()));
         if (!dbResponse.isEmpty())
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Error\": \"Internal server error\"}");
@@ -52,6 +57,10 @@ public class LinkUserToProjectController {
         ResponseEntity<Object> response = this.checkParameters(linkUserToProjectRequest);
         if (response != null)
             return response;
+        if (!CheckRight.isLinkToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()), dataInterface))
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"Error\": \"must be link to project\"}");
         final String dbResponse = this.dataInterface.unLinkUserToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()));
         if (!dbResponse.isEmpty())
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Error\": \"Internal server error\"}");

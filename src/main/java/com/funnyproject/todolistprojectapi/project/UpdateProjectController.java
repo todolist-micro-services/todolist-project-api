@@ -37,7 +37,7 @@ public class UpdateProjectController {
         if (this.dataInterface.retrieveProjectById(Integer.parseInt(updateProjectRequest.getId())).creator.userId != user.userId)
             return ResponseEntity
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .body("{\"error\": \"user can only update it own projects\"}");
+                    .body("{\"error\": \"user can only update it own created projects\"}");
         ResponseEntity<Object> response = this.checkParameters(updateProjectRequest);
         if (response != null)
             return response;
