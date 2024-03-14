@@ -62,6 +62,9 @@ public class RetrieveProjectController {
         }
         final User user = this.dataInterface.retrieveUserFromToken(authorization[1]);
         final List<Project> projects = this.dataInterface.retrieveAllUserProjects(user.userId);
+        if (projects == null) {
+            return new ResponseEntity<>(projectsDto, HttpStatus.OK);
+        }
         for (int i = 0; i != projects.size(); ++i)
             projectsDto.add(new ProjectDto(projects.get(i).projectId, projects.get(i).name, projects.get(i).description,
                     projects.get(i).creationDate, projects.get(i).creator.userId));

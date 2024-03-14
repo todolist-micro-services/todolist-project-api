@@ -8,9 +8,8 @@ import java.util.List;
 public class CheckRight {
     public static boolean isLinkToProject(int userId, int projectId, DataInterface dataInterface) {
         List<User> users = dataInterface.retrieveAllUserLinkToProject(projectId);
-        System.out.println("1");
-        System.out.println(users.size());
-        System.out.println("2");
+        if (users == null)
+            return true;
 
         for (int  i = 0; i != users.size(); ++i)
             if (users.get(i).userId == userId)

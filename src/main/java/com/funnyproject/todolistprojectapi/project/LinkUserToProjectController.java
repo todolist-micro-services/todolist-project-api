@@ -29,13 +29,20 @@ public class LinkUserToProjectController {
         if (authorization.length != 2) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED) .body("{\"error\": \"Bad authorization header\"}");
         }
+        System.out.println("coucou 2");
         ResponseEntity<Object> response = this.checkParameters(linkUserToProjectRequest);
+        System.out.println("coucou 3");
         if (response != null)
             return response;
+        System.out.println("coucou 4");
         if (!CheckRight.isLinkToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()), dataInterface))
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("{\"Error\": \"must be link to project\"}");
+        System.out.println("coucou 1");
+        System.out.println(Integer.parseInt(linkUserToProjectRequest.getUser()));
+        System.out.println( Integer.parseInt(linkUserToProjectRequest.getProject()));
+        System.out.println("coucou 2");
         final String dbResponse = this.dataInterface.linkUserToProject(Integer.parseInt(linkUserToProjectRequest.getUser()), Integer.parseInt(linkUserToProjectRequest.getProject()));
         if (!dbResponse.isEmpty())
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"Error\": \"Internal server error\"}");
